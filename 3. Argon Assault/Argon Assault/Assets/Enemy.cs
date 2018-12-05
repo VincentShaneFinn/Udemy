@@ -10,6 +10,7 @@ public class Enemy : MonoBehaviour {
 
     ScoreBoard scoreBoard;
     [SerializeField] int scorePerHit = 12; // maybe put on an enemy
+    [SerializeField] int hp = 100; // maybe put on an enemy
 
     // Use this for initialization
     void Start () {
@@ -26,7 +27,18 @@ public class Enemy : MonoBehaviour {
     void OnParticleCollision(GameObject col) //col is the name of the particle object
     {
         scoreBoard.ScoreHit(scorePerHit);
-        GameObject fx = Instantiate(deathFX,transform.position, Quaternion.identity);
+        //lower hp, could be via enemy, or a static value, or from the bullet
+        hp--;
+        if(hp <= 0)
+        {
+            killEnemy();
+        }
+
+    }
+
+    private void killEnemy()
+    {
+        GameObject fx = Instantiate(deathFX, transform.position, Quaternion.identity);
         fx.transform.parent = parent;
         Destroy(gameObject);
     }
