@@ -1,0 +1,12 @@
+fileFormatVersion: 2
+guid: 491265408daea4e499e731348f241fa4
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - deathFX: {fileID: 1860587537615914, guid: edadf1be4aa79fd42ae140f30099f32a, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
