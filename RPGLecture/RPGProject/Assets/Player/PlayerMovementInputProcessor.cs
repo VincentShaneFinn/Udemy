@@ -3,13 +3,14 @@ using UnityEngine;
 using UnityStandardAssets.Characters.ThirdPerson;
 
 [RequireComponent(typeof (ThirdPersonCharacter))]
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovementInputProcessor : MonoBehaviour
 {
     [SerializeField] float walkMoveStopRadius = .2f;
+    [SerializeField] float attackMoveStopRadius = 5f;
 
     ThirdPersonCharacter cc;   // A reference to the ThirdPersonCharacter on the object
     CameraRaycaster cameraRaycaster;
-    Vector3 currentClickTarget;
+    Vector3 currentDestination, clickPoint;
 
     bool isInDirectControlMode = false; // TODO consider making static later
     private bool jumpPressed;
@@ -19,7 +20,7 @@ public class PlayerMovement : MonoBehaviour
     {
         cameraRaycaster = Camera.main.GetComponent<CameraRaycaster>();
         cc = GetComponent<ThirdPersonCharacter>();
-        currentClickTarget = transform.position;
+        currentDestination = transform.position;
     }
 
     private void Update()
@@ -31,7 +32,7 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.G)) // TODO allow player to remap later or auto remap on controller plugin
         {
             isInDirectControlMode = !isInDirectControlMode; // Toggle Mode
-            currentClickTarget = transform.position;
+            currentDestination = transform.position;
             if (isInDirectControlMode)
             {
                 print("Control Method: GamePad");
@@ -81,13 +82,14 @@ public class PlayerMovement : MonoBehaviour
     {
         if (Input.GetMouseButton(0))
         {
+            clickPoint = cameraRaycaster.hit.point;
             switch (cameraRaycaster.currentLayerHit)
             {
                 case Layer.Walkable:
-                    currentClickTarget = cameraRaycaster.hit.point;  // So not set in default case
+                    currentDestination = ShortDestination(clickPoint, walkMoveStopRadius);
                     break;
                 case Layer.Enemy:
-                    print("Not moving to enemy");
+                    currentDestination = ShortDestination(clickPoint, attackMoveStopRadius);
                     break;
                 default:
                     print("Unexpected layer here");
@@ -96,15 +98,38 @@ public class PlayerMovement : MonoBehaviour
 
         }
 
-        var playerToClickPoint = currentClickTarget - transform.position; //cc.Move normalizes the move direction
-        if (playerToClickPoint.magnitude >= walkMoveStopRadius)
+        WalkToDestination();
+    }
+
+    private void WalkToDestination()
+    {
+        var playerToClickPoint = currentDestination - transform.position; //cc.Move normalizes the move direction
+        if (playerToClickPoint.magnitude >= walkMoveStopRadius) // TODO fix when set to >= 0
         {
-            cc.Move(currentClickTarget - transform.position, crouchHeld, jumpPressed);
+            cc.Move(playerToClickPoint, crouchHeld, jumpPressed);
         }
         else
         {
             cc.Move(Vector3.zero, crouchHeld, jumpPressed);
         }
+    }
+
+    Vector3 ShortDestination(Vector3 destination, float shortening)
+    {
+        Vector3 reductionVector = (destination - transform.position).normalized * shortening;
+        return destination - reductionVector;
+    }
+
+    void OnDrawGizmos()
+    {
+        // Draw movement gizmos;
+        Gizmos.color = Color.black;
+        Gizmos.DrawLine(transform.position, currentDestination);
+        Gizmos.DrawSphere(currentDestination, 0.15f);
+        Gizmos.DrawSphere(clickPoint, .1f);
+
+        Gizmos.color = new Color(255f, 0f, 0f, .5f);
+        Gizmos.DrawWireSphere(transform.position, attackMoveStopRadius);
     }
 }
 
