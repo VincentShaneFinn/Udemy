@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEditor;
+﻿using UnityEditor;
 
 // TODO consider changing to a property drawer
 [CustomEditor(typeof(CameraRaycaster))]
