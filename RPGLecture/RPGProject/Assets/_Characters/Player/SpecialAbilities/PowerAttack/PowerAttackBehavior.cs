@@ -1,25 +1,28 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace RPG.Characters
 {
-    public class Energy : MonoBehaviour
+    public class PowerAttackBehavior : MonoBehaviour, ISpecialAbility
     {
-        [SerializeField] RawImage energyBar;
-        [SerializeField] float maxEnergyPoints = 100f;
+        PowerAttackConfig config;
+        public void SetConfig(PowerAttackConfig configToSet) { this.config = configToSet; }
 
-        float currentEnergyPoints;
 
         // Use this for initialization
         void Start()
         {
-            currentEnergyPoints = maxEnergyPoints;
+
         }
 
         // Update is called once per frame
         void Update()
+        {
+
+        }
+
+        public void Use()
         {
 
         }
