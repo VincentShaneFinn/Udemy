@@ -14,9 +14,12 @@ namespace RPG.Characters
     public class Player : MonoBehaviour, IDamageable
     {
         [SerializeField] float maxHealthPoints = 100f;
-        [SerializeField] float damagePerHit = 10f;
+        [SerializeField] float baseDamage = 10f;
         [SerializeField] Weapon weaponInUse = null;
         [SerializeField] AnimatorOverrideController animatorOverrideController = null;
+
+        // Temporarily serialized for dubbing
+        [SerializeField] SpecialAbilityConfig[] ability1 = null;
 
         Animator animator;
         float currentHealthPoints;
@@ -31,6 +34,11 @@ namespace RPG.Characters
             SetCurrentMaxHealth();
             PutWeaponInHand();
             SetupRuntimeAnimator();
+            for(int i = 0; i < ability1.Length; i++)
+            {
+                ability1[i].AttachComponentTo(gameObject);
+            }
+            
         }
 
         public void TakeDamage(float damage)
@@ -80,6 +88,22 @@ namespace RPG.Characters
             {
                 AttackTarget(enemy);
             }
+            else if (Input.GetMouseButtonDown(1))
+            {
+                AttempSpecialAbility1(1, enemy);
+            }
+        }
+
+        private void AttempSpecialAbility1(int abilityIndex, Enemy enemy)
+        {
+            var energyComponent = GetComponent<Energy>();
+            float energyCost = ability1[abilityIndex].GetEnergyCost();
+            if (energyComponent.IsEnergyAvailable(energyCost))
+            {
+                energyComponent.ConsumeEnergy(energyCost);
+                var abilityParams = new AbilityUseParams(enemy, baseDamage);
+                ability1[abilityIndex].Use(abilityParams);
+            }
         }
 
         private void AttackTarget(Enemy enemy)
@@ -87,7 +111,7 @@ namespace RPG.Characters
             if (Time.time - lastHitTime > weaponInUse.GetMinTimeBetweenHits())
             {
                 animator.SetTrigger("Attack"); // TODO make const
-                enemy.TakeDamage(damagePerHit);
+                enemy.TakeDamage(baseDamage);
                 lastHitTime = Time.time;
             }
         }
