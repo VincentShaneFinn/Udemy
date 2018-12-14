@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 // TODO change to RPG.Characters namespace
-namespace UnityStandardAssets.Characters.ThirdPerson
+namespace RPG.Characters
 {
     [RequireComponent(typeof (UnityEngine.AI.NavMeshAgent))]
     [RequireComponent(typeof (ThirdPersonCharacter))]
@@ -32,7 +32,11 @@ namespace UnityStandardAssets.Characters.ThirdPerson
             if (agent.remainingDistance > agent.stoppingDistance)
                 character.Move(agent.desiredVelocity, false, false);
             else
+            {
+                if(!GetComponent<Player>())
+                agent.velocity = Vector3.zero;
                 character.Move(Vector3.zero, false, false);
+            }
         }
 
 
