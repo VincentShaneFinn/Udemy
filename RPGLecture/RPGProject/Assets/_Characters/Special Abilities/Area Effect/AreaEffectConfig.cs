@@ -11,9 +11,9 @@ namespace RPG.Characters
         [SerializeField] float radius = 5f;
         [SerializeField] float damageToEachTarget = 15f;
 
-        public override AbilityBehavior GetBehaviorComponent(GameObject gameObjectToattachTo)
+        public override AbilityBehaviour GetBehaviourComponent(GameObject objectToAttachTo)
         {
-            return gameObjectToattachTo.AddComponent<AreaEffectBehaviour>();
+            return objectToAttachTo.AddComponent<AreaEffectBehaviour>();
         }
 
         public float GetDamageToEachTarget()

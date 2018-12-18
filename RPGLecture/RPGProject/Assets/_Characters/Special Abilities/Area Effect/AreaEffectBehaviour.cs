@@ -5,16 +5,17 @@ using RPG.Characters;
 using RPG.Core;
 using System;
 
-public class AreaEffectBehaviour : AbilityBehavior {
+public class AreaEffectBehaviour : AbilityBehaviour {
 
-    public override void Use(AbilityUseParams useParams)
+    public override void Use(GameObject target)
     {
-        DealRadialDamage(useParams);
-        PlayParticleEffect();
         PlayAbilitySound();
+        DealRadialDamage();
+        PlayParticleEffect();
+        PlayAbilityAnimation();
     }
 
-    private void DealRadialDamage(AbilityUseParams useParams)
+    private void DealRadialDamage()
     {
         // Static sphere cast for targets
         RaycastHit[] hits = Physics.SphereCastAll(
@@ -26,11 +27,11 @@ public class AreaEffectBehaviour : AbilityBehavior {
 
         foreach (RaycastHit hit in hits)
         {
-            var damageable = hit.collider.gameObject.GetComponent<IDamageable>();
-            bool hitPlayer = hit.collider.gameObject.GetComponent<Player>();
+            var damageable = hit.collider.gameObject.GetComponent<HealthSystem>();
+            bool hitPlayer = hit.collider.gameObject.GetComponent<PlayerControl>();
             if (damageable != null && !hitPlayer)
             {
-                float damageToDeal = useParams.baseDamage + (config as AreaEffectConfig).GetDamageToEachTarget(); // TODO ok Rick?
+                float damageToDeal = (config as AreaEffectConfig).GetDamageToEachTarget();
                 damageable.TakeDamage(damageToDeal);
             }
         }

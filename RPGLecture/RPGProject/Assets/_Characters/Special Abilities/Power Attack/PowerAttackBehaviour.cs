@@ -4,33 +4,20 @@ using UnityEngine;
 
 namespace RPG.Characters
 {
-    public class PowerAttackBehaviour : AbilityBehavior
+    public class PowerAttackBehaviour : AbilityBehaviour
     {
-
-        // Use this for initialization
-        void Start()
+        public override void Use(GameObject target)
         {
-            print("Power Attack behaviour attached to " + gameObject.name);
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-
-        }
-
-        public override void Use(AbilityUseParams useParams)
-        {
-            print("Power attack used by: " + gameObject.name);
-            DealDamage(useParams);
-            PlayParticleEffect();
             PlayAbilitySound();
+            DealDamage(target);
+            PlayParticleEffect();
+            PlayAbilityAnimation();
         }
 
-        private void DealDamage(AbilityUseParams useParams)
+        private void DealDamage(GameObject target)
         {
-            float damageToDeal = useParams.baseDamage + (config as PowerAttackConfig).GetExtraDamage();
-            useParams.target.TakeDamage(damageToDeal);
+            float damageToDeal = (config as PowerAttackConfig).GetExtraDamage();
+            target.GetComponent<HealthSystem>().TakeDamage(damageToDeal);
         }
     }
 }
